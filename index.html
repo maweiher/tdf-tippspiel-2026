@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1C1C1E">
+<title>TdF Tippspiel 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#F2C12E;--yellow-dim:#D4A820;--dark:#1C1C1E;--dark2:#2C2C2E;--dark3:#3A3A3C;--red:#E8353A;--green:#30D158;--blue:#0A84FF;--white:#FFFFFF;--grey:#8E8E93;--card-bg:#2C2C2E;--radius:14px;--radius-sm:8px;--nav-h:64px;--safe-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--dark);color:var(--white);font-family:'Inter',sans-serif;overflow-x:hidden}
+button{cursor:pointer;border:none;background:none;font-family:inherit}
+input,select,textarea{font-family:inherit}
+a{text-decoration:none;color:inherit}
+#app{display:flex;flex-direction:column;height:100dvh}
+#header{flex-shrink:0;background:var(--dark);border-bottom:1px solid var(--dark3);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+#header h1{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+#header h1 span{color:var(--yellow)}
+#content{flex:1;overflow-y:auto;padding:16px;padding-bottom:calc(var(--nav-h) + 16px + var(--safe-bottom))}
+#nav{flex-shrink:0;position:fixed;bottom:0;left:0;right:0;background:rgba(28,28,30,.95);backdrop-filter:blur(12px);border-top:1px solid var(--dark3);display:flex;height:calc(var(--nav-h) + var(--safe-bottom));padding-bottom:var(--safe-bottom);z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--grey);font-size:9px;font-weight:500;transition:color .2s;padding-top:8px}
+.nav-btn.active{color:var(--yellow)}
+.nav-btn svg{width:20px;height:20px}
+.card{background:var(--card-bg);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--grey);margin-bottom:12px}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-yellow{background:var(--yellow);color:var(--dark)}.badge-green{background:var(--green);color:var(--dark)}.badge-grey{background:var(--dark3);color:var(--grey)}.badge-red{background:var(--red);color:var(--white)}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--dark3)}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;width:28px;text-align:center}
+.lb-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;flex-shrink:0}
+.lb-info{flex:1;min-width:0}.lb-name{font-weight:600;font-size:15px}.lb-detail{font-size:12px;color:var(--grey);margin-top:2px}
+.lb-pts{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800}.lb-pts-label{font-size:11px;color:var(--grey);text-align:right}
+.highlight{background:rgba(242,193,46,.08);border-radius:var(--radius-sm)}
+.etappe-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--dark3);cursor:pointer}
+.etappe-row:last-child{border-bottom:none}
+.etappe-num{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;width:32px;color:var(--yellow)}
+.etappe-info{flex:1;min-width:0}.etappe-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.etappe-meta{font-size:12px;color:var(--grey);margin-top:2px}
+.etappe-status{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.type-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.type-flat{background:var(--green)}.type-hilly{background:#FF9F0A}.type-mountain{background:var(--red)}.type-tt{background:var(--blue)}
+.form-group{margin-bottom:16px}
+.form-label{font-size:12px;font-weight:600;color:var(--grey);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:block}
+.form-input{width:100%;background:var(--dark3);border:1px solid transparent;border-radius:var(--radius-sm);padding:10px 12px;color:var(--white);font-size:15px;outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--yellow)}
+.form-select{width:100%;background:var(--dark3);border:1px solid transparent;border-radius:var(--radius-sm);padding:10px 12px;color:var(--white);font-size:15px;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:var(--radius-sm);font-size:15px;font-weight:600;transition:opacity .2s,transform .1s}
+.btn:active{transform:scale(.97)}.btn-primary{background:var(--yellow);color:var(--dark)}.btn-secondary{background:var(--dark3);color:var(--white)}.btn-danger{background:var(--red);color:var(--white)}.btn-full{width:100%}.btn:disabled{opacity:.4}
+.tabs{display:flex;gap:4px;background:var(--dark2);border-radius:var(--radius-sm);padding:4px;margin-bottom:16px}
+.tab{flex:1;padding:8px;border-radius:6px;font-size:13px;font-weight:600;text-align:center;color:var(--grey);transition:all .2s;cursor:pointer}
+.tab.active{background:var(--dark3);color:var(--white)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat-box{background:var(--dark3);border-radius:var(--radius-sm);padding:14px}
+.stat-value{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--yellow)}.stat-label{font-size:12px;color:var(--grey);margin-top:2px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end}
+.modal{background:var(--dark2);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-height:90dvh;overflow-y:auto;padding:20px 16px;padding-bottom:calc(20px + var(--safe-bottom))}
+.modal-handle{width:36px;height:4px;background:var(--dark3);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;text-transform:uppercase;margin-bottom:16px}
+.rider-search-wrap{position:relative}
+.rider-search-input{width:100%;background:var(--dark3);border:1px solid transparent;border-radius:var(--radius-sm);padding:10px 12px;color:var(--white);font-size:15px;outline:none;transition:border-color .2s}
+.rider-search-input:focus{border-color:var(--yellow)}
+.rider-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--dark2);border:1px solid var(--dark3);border-radius:var(--radius-sm);z-index:300;max-height:60vh;overflow-y:auto;margin-top:2px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.rider-option{padding:11px 12px;font-size:14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04)}
+.rider-option:hover{background:var(--dark3)}
+.clear-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--grey);font-size:18px;padding:4px}
+.joker-btn{display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;background:var(--dark3);color:var(--grey);border:2px solid transparent;transition:all .2s;width:100%}
+.joker-btn.active{background:rgba(242,193,46,.15);border-color:var(--yellow);color:var(--yellow)}
+.bonus-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--dark3)}
+.bonus-row:last-child{border-bottom:none}
+.bonus-emoji{font-size:20px;width:28px;text-align:center}.bonus-info{flex:1}.bonus-name{font-size:14px;font-weight:600}.bonus-desc{font-size:12px;color:var(--grey);margin-top:2px}
+.bonus-pts{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--yellow)}
+.progress-bar{height:4px;background:var(--dark3);border-radius:2px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;background:var(--yellow);border-radius:2px;transition:width .5s ease}
+.admin-tag{font-size:10px;background:var(--red);color:white;padding:2px 6px;border-radius:4px;font-weight:700}
+.text-yellow{color:var(--yellow)}.text-grey{color:var(--grey)}.text-red{color:var(--red)}.text-green{color:var(--green)}
+.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}
+.flex{display:flex}.flex-center{display:flex;align-items:center}.gap-8{gap:8px}.gap-12{gap:12px}.between{justify-content:space-between}
+.pill-row{display:flex;flex-wrap:wrap;gap:6px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--grey)}
+.empty-state .empty-icon{font-size:40px;margin-bottom:12px}
+.sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.sync-dot.online{background:var(--green)}.sync-dot.offline{background:var(--red)}.sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1s linear infinite}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--dark2);color:var(--white);padding:12px 20px;border-radius:20px;font-size:14px;font-weight:600;border:1px solid var(--dark3);z-index:999;transition:transform .3s ease;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--dark3);border-radius:2px}
+/* LOGIN */
+.login-overlay{position:fixed;inset:0;background:var(--dark);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;overflow-y:auto}
+.login-title{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;text-transform:uppercase;text-align:center;margin-bottom:4px}
+.login-title span{color:var(--yellow)}
+.login-subtitle{font-size:14px;color:var(--grey);margin-bottom:32px;text-align:center}
+.login-players{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
+.login-player-btn{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--radius);background:var(--card-bg);border:2px solid transparent;transition:all .2s;text-align:left;width:100%}
+.login-player-btn:hover{border-color:var(--yellow)}
+.login-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;flex-shrink:0}
+.login-name{font-size:17px;font-weight:600}
+.pin-row{display:flex;gap:8px;justify-content:center;margin:20px 0}
+.pin-digit{width:52px;height:64px;background:var(--card-bg);border:2px solid var(--dark3);border-radius:var(--radius-sm);font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;text-align:center;color:var(--white);outline:none;transition:border-color .2s}
+.pin-digit:focus{border-color:var(--yellow)}
+.pin-error{color:var(--red);font-size:13px;text-align:center;min-height:20px;margin-bottom:8px}
+.login-back{color:var(--grey);font-size:14px;margin-top:12px;display:flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <h1>🚴 TdF <span>Tippspiel</span> 2026</h1>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--grey)">
+      <span class="sync-dot offline" id="sync-dot"></span>
+      <span id="sync-label">–</span>
+    </div>
+  </div>
+  <div id="content"></div>
+  <nav id="nav">
+    <button class="nav-btn active" data-page="leaderboard" onclick="navigate('leaderboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Ranking
+    </button>
+    <button class="nav-btn" data-page="etappen" onclick="navigate('etappen')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Etappen
+    </button>
+    <button class="nav-btn" data-page="tipps" onclick="navigate('tipps')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Tipps
+    </button>
+    <button class="nav-btn" data-page="stats" onclick="navigate('stats')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Stats
+    </button>
+    <button class="nav-btn" data-page="regeln" onclick="navigate('regeln')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Regeln
+    </button>
+    <button class="nav-btn" data-page="admin" onclick="navigate('admin')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>Admin
+    </button>
+  </nav>
+</div>
+<div id="toast"></div>
+<div id="modal-container"></div>
+<script>
+// ══════════════════════════════════════════════════
+// 1. STATIC CONFIG
+// ══════════════════════════════════════════════════
+const PLAYERS = [
+  { id:'frank',    name:'Frank',    color:'#FF6B6B', initials:'FR', pin:'5869' },
+  { id:'johannes', name:'Johannes', color:'#4ECDC4', initials:'JO', pin:'8453' },
+  { id:'martin',   name:'Martin',   color:'#45B7D1', initials:'MA', pin:'7695' },
+  { id:'jonas',    name:'Jonas',    color:'#96CEB4', initials:'JN', pin:'2437' },
+  { id:'marius',   name:'Marius',   color:'#DDA0DD', initials:'MR', pin:'3064' },
+  { id:'mark',     name:'Mark',     color:'#F7DC6F', initials:'MK', pin:'6505' },
+];
+
+const ETAPPEN = [
+  { nr:1,  typ:'tt',       datum:'2026-07-04', start:'Barcelona',                    ziel:'Barcelona',               km:'19.6 km',  link:'https://www.letour.fr/de/etappe-1'  },
+  { nr:2,  typ:'hilly',    datum:'2026-07-05', start:'Tarragona',                    ziel:'Barcelona',               km:'178.8 km', link:'https://www.letour.fr/de/etappe-2'  },
+  { nr:3,  typ:'mountain', datum:'2026-07-06', start:'Granollers',                   ziel:'Les Angles',              km:'187.3 km', link:'https://www.letour.fr/de/etappe-3'  },
+  { nr:4,  typ:'hilly',    datum:'2026-07-07', start:'Carcassonne',                  ziel:'Foix',                    km:'162.5 km', link:'https://www.letour.fr/de/etappe-4'  },
+  { nr:5,  typ:'flat',     datum:'2026-07-08', start:'Lannemezan',                   ziel:'Pau',                     km:'179.2 km', link:'https://www.letour.fr/de/etappe-5'  },
+  { nr:6,  typ:'mountain', datum:'2026-07-09', start:'Pau',                          ziel:'Gavarnie-Gèdre',          km:'138.3 km', link:'https://www.letour.fr/de/etappe-6'  },
+  { nr:7,  typ:'flat',     datum:'2026-07-10', start:'Hagetmau',                     ziel:'Bordeaux',                km:'237.7 km', link:'https://www.letour.fr/de/etappe-7'  },
+  { nr:8,  typ:'flat',     datum:'2026-07-11', start:'Périgueux',                    ziel:'Bergerac',                km:'105.7 km', link:'https://www.letour.fr/de/etappe-8'  },
+  { nr:9,  typ:'hilly',    datum:'2026-07-12', start:'Malemort',                     ziel:'Ussel',                   km:'116.6 km', link:'https://www.letour.fr/de/etappe-9'  },
+  { nr:10, typ:'mountain', datum:'2026-07-14', start:'Aurillac',                     ziel:'Le Lioran',               km:'124.6 km', link:'https://www.letour.fr/de/etappe-10' },
+  { nr:11, typ:'flat',     datum:'2026-07-15', start:'Vichy',                        ziel:'Nevers',                  km:'116.9 km', link:'https://www.letour.fr/de/etappe-11' },
+  { nr:12, typ:'flat',     datum:'2026-07-16', start:'Circuit de Nevers Magny-Cours',ziel:'Chalon-sur-Saône',        km:'134.9 km', link:'https://www.letour.fr/de/etappe-12' },
+  { nr:13, typ:'hilly',    datum:'2026-07-17', start:'Chalon-sur-Saône',             ziel:'Belfort',                 km:'201.0 km', link:'https://www.letour.fr/de/etappe-13' },
+  { nr:14, typ:'mountain', datum:'2026-07-18', start:'Delle',                        ziel:'Le Markstein',            km:'149.0 km', link:'https://www.letour.fr/de/etappe-14' },
+  { nr:15, typ:'hilly',    datum:'2026-07-19', start:'Cernay',                       ziel:'Mulhouse',                km:'143.0 km', link:'https://www.letour.fr/de/etappe-15' },
+  { nr:16, typ:'tt',       datum:'2026-07-21', start:'Thonon-les-Bains',             ziel:'Thonon-les-Bains',        km:'26.0 km',  link:'https://www.letour.fr/de/etappe-16' },
+  { nr:17, typ:'flat',     datum:'2026-07-22', start:'Chambéry',                     ziel:'Voiron',                  km:'172.0 km', link:'https://www.letour.fr/de/etappe-17' },
+  { nr:18, typ:'mountain', datum:'2026-07-23', start:'Voiron',                       ziel:'Orcières-Merlette',       km:'149.0 km', link:'https://www.letour.fr/de/etappe-18' },
+  { nr:19, typ:'mountain', datum:'2026-07-24', start:'Gap',                          ziel:"Alpe d'Huez",             km:'128.0 km', link:'https://www.letour.fr/de/etappe-19' },
+  { nr:20, typ:'mountain', datum:'2026-07-25', start:"Le Bourg-d'Oisans",            ziel:"Alpe d'Huez",             km:'122.0 km', link:'https://www.letour.fr/de/etappe-20' },
+  { nr:21, typ:'flat',     datum:'2026-07-26', start:'Saint-Quentin-en-Yvelines',    ziel:'Paris Champs-Élysées',    km:'115.0 km', link:'https://www.letour.fr/de/etappe-21' },
+];
+
+const BONUS_CONFIGS = [
+  { id:'gc_prophet',      emoji:'🏆', name:'GC Prophet',       desc:'Meiste exakte GC-Platzierungen',            pts:40 },
+  { id:'sharpshooter',    emoji:'🎯', name:'Sharpshooter',     desc:'Höchste Quote exakter Top-3-Platzierungen', pts:35 },
+  { id:'green_fan',       emoji:'💚', name:'Green Jersey Fan', desc:'Meiste Tagessieger in Flachetappen',        pts:25 },
+  { id:'mountain_goat',   emoji:'⛰️', name:'Mountain Goat',   desc:'Meiste Tagessieger in Bergetappen',         pts:25 },
+  { id:'underdog_hunter', emoji:'😤', name:'Underdog Hunter', desc:'Meiste alleinige Tagessieger-Tipps',        pts:30 },
+  { id:'hot_streak',      emoji:'📅', name:'Hot Streak',       desc:'Längste Serie mit mind. 10 Punkten/Tag',    pts:30 },
+  { id:'comeback_king',   emoji:'🔄', name:'Comeback King',   desc:'Bestes Ergebnis nach einem 0-Punkte-Tag',   pts:20 },
+  { id:'stage_hunter',    emoji:'🥾', name:'Stage Hunter',    desc:'Meiste Ausreißer-Treffer gesamt',            pts:30 },
+];
+
+const TYP_LABEL = { flat:'Flach', hilly:'Hügelig', mountain:'Gebirge', tt:'Zeitfahren' };
+const TYP_CLASS  = { flat:'type-flat', hilly:'type-hilly', mountain:'type-mountain', tt:'type-tt' };
+
+const RIDERS = [
+  // UAE Team Emirates
+  'POGACAR Tadej (UAE Team Emirates)','DEL TORO Isaac (UAE Team Emirates)','WELLENS Tim (UAE Team Emirates)',
+  'MCNULTY Brandon (UAE Team Emirates)','YATES Adam (UAE Team Emirates)','VERMEERSCH Florian (UAE Team Emirates)',
+  'POLITT Nils (UAE Team Emirates)','GROSSCHARTNER Felix (UAE Team Emirates)',
+  // Alpecin - Premier Tech
+  'PHILIPSEN Jasper (Alpecin-Premier Tech)','VAN DER POEL Mathieu (Alpecin-Premier Tech)',
+  'VERSTRYNGE Emiel (Alpecin-Premier Tech)','RICKAERT Jonas (Alpecin-Premier Tech)',
+  'MARSMAN Tim (Alpecin-Premier Tech)','DEBRUYNE Ramses (Alpecin-Premier Tech)',
+  'PLANCKAERT Edward (Alpecin-Premier Tech)','DILLIER Silvan (Alpecin-Premier Tech)',
+  // Bahrain Victorious
+  'TIBERI Antonio (Bahrain Victorious)','MARTINEZ Lenny (Bahrain Victorious)',
+  'MOHORIC Matej (Bahrain Victorious)','BAUHAUS Phil (Bahrain Victorious)',
+  'CARUSO Damiano (Bahrain Victorious)','GRADEK Kamil (Bahrain Victorious)',
+  'STANNARD Robert (Bahrain Victorious)','VAN MECHELEN Vlad (Bahrain Victorious)',
+  // Decathlon CMA CGM
+  'SEIXAS Paul (Decathlon CMA CGM)','KOOIJ Olav (Decathlon CMA CGM)',
+  'RICCITELLO Matthew (Decathlon CMA CGM)','BENOOT Tiesj (Decathlon CMA CGM)',
+  'HOOLE Daan (Decathlon CMA CGM)','PRODHOMME Nicolas (Decathlon CMA CGM)',
+  'PARET-PEINTRE Aurelien (Decathlon CMA CGM)','BOL Cees (Decathlon CMA CGM)',
+  // EF Education - EasyPost
+  'HEALY Ben (EF Education-EasyPost)','ASGREEN Kasper (EF Education-EasyPost)',
+  'CARAPAZ Richard (EF Education-EasyPost)','BAUDIN Alex (EF Education-EasyPost)',
+  'QUINN Sean (EF Education-EasyPost)','STEINHAUSER Georg (EF Education-EasyPost)',
+  'WALKER Max (EF Education-EasyPost)','VALGREN Michael (EF Education-EasyPost)',
+  // Groupama - FDJ
+  'MARTIN Guillaume (Groupama-FDJ)','GREGOIRE Romain (Groupama-FDJ)',
+  'BERTHET Clement (Groupama-FDJ)','BRAZ AFONSO Clement (Groupama-FDJ)',
+  'GERMANI Lorenzo (Groupama-FDJ)','PACHER Quentin (Groupama-FDJ)',
+  'RUSSO Clement (Groupama-FDJ)','COSTIOU Ewen (Groupama-FDJ)',
+  // Netcompany INEOS
+  'ARENSMAN Thymen (Netcompany INEOS)','BERNAL Egan (Netcompany INEOS)',
+  'FOSS Tobias (Netcompany INEOS)','GANNA Filippo (Netcompany INEOS)',
+  'GODON Dorian (Netcompany INEOS)','KWIATKOWSKI Michal (Netcompany INEOS)',
+  'TARLING Joshua (Netcompany INEOS)','VAUQUELIN Kevin (Netcompany INEOS)',
+  // Lidl - Trek
+  'AYUSO Juan (Lidl-Trek)','PEDERSEN Mads (Lidl-Trek)',
+  'VACEK Mathias (Lidl-Trek)','SKJELMOSE Mattias (Lidl-Trek)',
+  'SIMMONS Quinn (Lidl-Trek)','GEE-WEST Derek (Lidl-Trek)',
+  'VERONA Carlos (Lidl-Trek)','SKUJINS Toms (Lidl-Trek)',
+  // Lotto Intermarché
+  'DE LIE Arnaud (Lotto Intermarche)','VAN EETVELT Lennert (Lotto Intermarche)',
+  'ZIMMERMANN Georg (Lotto Intermarche)','ARTZ Huub (Lotto Intermarche)',
+  'BERCKMOES Jenno (Lotto Intermarche)','SLOCK Liam (Lotto Intermarche)',
+  'CRAPS Lars (Lotto Intermarche)','VEISTROFFER Baptiste (Lotto Intermarche)',
+  // Movistar
+  'UIJTDEBROEKS Cian (Movistar)','GARCIA PIERNA Raul (Movistar)',
+  'CASTRILLO Pablo (Movistar)','RUBIO Einer (Movistar)',
+  'ROMO Javier (Movistar)','OLIVEIRA Nelson (Movistar)',
+  'CEPEDA Jefferson (Movistar)','HESSMANN Michel (Movistar)',
+  // NSN Cycling
+  'GIRMAY Biniam (NSN Cycling)','STEWART Jake (NSN Cycling)',
+  'ASKEY Lewis (NSN Cycling)','NEILANDS Krists (NSN Cycling)',
+  'FRIGO Marco (NSN Cycling)','LOUVEL Matis (NSN Cycling)',
+  'BENNETT George (NSN Cycling)','VAN ASBROECK Tom (NSN Cycling)',
+  // Red Bull - BORA - hansgrohe
+  'VAN DIJKE Tim (Red Bull-BORA)','EVENEPOEL Remco (Red Bull-BORA)',
+  'DENZ Nico (Red Bull-BORA)','LIPOWITZ Florian (Red Bull-BORA)',
+  'CATTANEO Mattia (Red Bull-BORA)','TRATNIK Jan (Red Bull-BORA)',
+  'VAN GILS Maxim (Red Bull-BORA)','HINDLEY Jai (Red Bull-BORA)',
+  // Soudal Quick-Step
+  'PARET-PEINTRE Valentin (Soudal Quick-Step)','MERLIER Tim (Soudal Quick-Step)',
+  'EENKHOORN Pascal (Soudal Quick-Step)','STUYVEN Jasper (Soudal Quick-Step)',
+  'VAN BAARLE Dylan (Soudal Quick-Step)','VAN LERBERGHE Bert (Soudal Quick-Step)',
+  'VAN WILDER Ilan (Soudal Quick-Step)','VERVAEKE Louis (Soudal Quick-Step)',
+  // Team Jayco AlUla
+  'MATTHEWS Michael (Jayco AlUla)','PLAPP Luke (Jayco AlUla)',
+  'ACKERMANN Pascal (Jayco AlUla)',"O'CONNOR Ben (Jayco AlUla)",
+  'SCHMID Mauro (Jayco AlUla)',"O'BRIEN Kelland (Jayco AlUla)",
+  'ENGELHARDT Felix (Jayco AlUla)','DURBRIDGE Luke (Jayco AlUla)',
+  // Team Picnic PostNL
+  'BITTNER Pavel (Picnic PostNL)','BARGUIL Warren (Picnic PostNL)',
+  'VAN DEN BROEK Frank (Picnic PostNL)','DHONDT Robbe (Picnic PostNL)',
+  'VAN DEN BERG Julius (Picnic PostNL)','MARKL Niklas (Picnic PostNL)',
+  'BIESTERBOS Frits (Picnic PostNL)','DEGENKOLB John (Picnic PostNL)',
+  // Visma - Lease a Bike
+  'CAMPENAERTS Victor (Visma-Lease a Bike)','AFFINI Edoardo (Visma-Lease a Bike)',
+  'HAGENES Per Strand (Visma-Lease a Bike)','JORGENSON Matteo (Visma-Lease a Bike)',
+  'KUSS Sepp (Visma-Lease a Bike)','ARMIRAIL Bruno (Visma-Lease a Bike)',
+  'PIGANZOLI Davide (Visma-Lease a Bike)','VINGEGAARD Jonas (Visma-Lease a Bike)',
+  // Uno-X Mobility
+  'CORT Magnus (Uno-X Mobility)','JOHANNESSEN Tobias (Uno-X Mobility)',
+  'SKAARSETH Anders (Uno-X Mobility)','WAERENSKJOLD Soren (Uno-X Mobility)',
+  'CHARMIG Anthon (Uno-X Mobility)','ABRAHAMSEN Jonas (Uno-X Mobility)',
+  'TRAEEN Torstein (Uno-X Mobility)','JOHANNESSEN Anders (Uno-X Mobility)',
+  // XDS Astana
+  'TEUNISSEN Mike (XDS Astana)','HIGUITA Sergio (XDS Astana)',
+  'TEJADA Harold (XDS Astana)','KANTER Max (XDS Astana)',
+  'VINOKUROV Nicolas (XDS Astana)','BALLERINI Davide (XDS Astana)',
+  'GATE Aaron (XDS Astana)','VELASCO Simone (XDS Astana)',
+  // Cofidis
+  'ALLEGAERT Piet (Cofidis)','BIERMANS Jenthe (Cofidis)',
+  'FRETIN Milan (Cofidis)','KIRSCH Alex (Cofidis)',
+  'PAGE Hugo (Cofidis)','ARANBURU Alex (Cofidis)',
+  'THOMAS Benjamin (Cofidis)','IZAGIRRE Ion (Cofidis)',
+  // Tudor Pro Cycling
+  'ALAPHILIPPE Julian (Tudor Pro Cycling)','TRENTIN Matteo (Tudor Pro Cycling)',
+  'STORER Michael (Tudor Pro Cycling)','PLUIMERS Rick (Tudor Pro Cycling)',
+  'DE KLEIJN Arvid (Tudor Pro Cycling)','HALLER Marco (Tudor Pro Cycling)',
+  'HIRSCHI Marc (Tudor Pro Cycling)','VOISARD Yannis (Tudor Pro Cycling)',
+  // TotalEnergies
+  'JEGAT Jordan (TotalEnergies)','DELETTRE Alexandre (TotalEnergies)',
+  'TURGIS Anthony (TotalEnergies)','VERCHER Matteo (TotalEnergies)',
+  'LE BERRE Mathis (TotalEnergies)','BREUILLARD Nicolas (TotalEnergies)',
+  'DELBOVE Joris (TotalEnergies)','GUERNALEC Thibault (TotalEnergies)',
+  // Caja Rural
+  'MOLENAAR Alex (Caja Rural)','NICOLAU Joel (Caja Rural)',
+  'BALDERSTONE Abel (Caja Rural)','BERWICK Sebastian (Caja Rural)',
+  'GAVIRIA Fernando (Caja Rural)','OLDANI Stefano (Caja Rural)',
+  'OTRUBA Jakub (Caja Rural)','PARRA Jose Felix (Caja Rural)',
+  // Pinarello Q36.5
+  'PIDCOCK Tom (Pinarello Q36.5)','AZPARREN Xabier (Pinarello Q36.5)',
+  'HARPER Chris (Pinarello Q36.5)','HERMANS Quinten (Pinarello Q36.5)',
+  'HOWSON Damien (Pinarello Q36.5)','MEURISSE Xandro (Pinarello Q36.5)',
+  'VAN MOER Brent (Pinarello Q36.5)','WRIGHT Fred (Pinarello Q36.5)',
+];
+
+const TTT_TEAMS = [
+  'UAE Team Emirates','Alpecin-Premier Tech','Bahrain Victorious',
+  'Decathlon CMA CGM','EF Education-EasyPost','Groupama-FDJ',
+  'Netcompany INEOS','Lidl-Trek','Lotto Intermarche','Movistar',
+  'NSN Cycling','Red Bull-BORA','Soudal Quick-Step','Jayco AlUla',
+  'Picnic PostNL','Visma-Lease a Bike','Uno-X Mobility','XDS Astana',
+  'Cofidis','Tudor Pro Cycling','TotalEnergies','Caja Rural','Pinarello Q36.5',
+];
+
+
+const DEFAULT_STATE = {
+  riders:[], gcTipps:{}, etTipps:{}, ergebnisse:{},
+  gcErgebnis:{gc:[],berg:'',sprint:'',nachwuchs:'',team:''},
+  joker:{}, bonusEtappen:[], lastSync:null,
+};
+
+// ══════════════════════════════════════════════════
+// 2. APP STATE
+// ══════════════════════════════════════════════════
+var STATE         = loadLocalState();
+var loggedInPlayer = null;
+var currentPage   = 'leaderboard';
+var adminUnlocked = false;
+var activeDropdown = null;
+
+function loadLocalState() {
+  try { var s = localStorage.getItem('tdf2026'); return s ? Object.assign({},DEFAULT_STATE,JSON.parse(s)) : Object.assign({},DEFAULT_STATE); }
+  catch(e) { return Object.assign({},DEFAULT_STATE); }
+}
+function saveLocal() { localStorage.setItem('tdf2026', JSON.stringify(STATE)); }
+function getApiBase() { return localStorage.getItem('tdf_api_base') || ''; }
+
+// ══════════════════════════════════════════════════
+// 3. API
+// ══════════════════════════════════════════════════
+function setSyncStatus(s,l) {
+  var d=document.getElementById('sync-dot'), lb=document.getElementById('sync-label');
+  if(d) d.className='sync-dot '+s;
+  if(lb) lb.textContent=l;
+}
+
+async function pullState() {
+  var base=getApiBase(); if(!base){setSyncStatus('offline','Offline');return;}
+  setSyncStatus('syncing','Sync...');
+  try {
+    var r=await fetch(base+'?action=state',{signal:AbortSignal.timeout(8000)});
+    var j=await r.json();
+    if(j&&Object.keys(j).length>0){STATE=Object.assign({},DEFAULT_STATE,j);saveLocal();}
+    setSyncStatus('online','Online');
+  } catch(e){setSyncStatus('offline','Offline');}
+}
+
+async function pushState() {
+  var base=getApiBase(); if(!base){saveLocal();return;}
+  setSyncStatus('syncing','Speichern...');
+  try {
+    await fetch(base+'?action=state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({state:STATE}),signal:AbortSignal.timeout(8000)});
+    saveLocal(); setSyncStatus('online','Online');
+  } catch(e){saveLocal();setSyncStatus('offline','Lokal');showToast('⚠️ Offline – lokal gespeichert');}
+}
+
+setInterval(function(){if(getApiBase())pullState();},60000);
+
+// ══════════════════════════════════════════════════
+// 4. DEADLINE
+// ══════════════════════════════════════════════════
+function getEtappeDeadline(nr) {
+  var e=ETAPPEN.find(function(x){return x.nr===nr;});
+  return e ? new Date(e.datum+'T10:00:00') : null;
+}
+function getGCDeadline() { return new Date(ETAPPEN[0].datum+'T10:00:00'); }
+function isPastDeadline(nr) { return new Date()>getEtappeDeadline(nr); }
+function isGCPastDeadline() { return new Date()>getGCDeadline(); }
+function fmtDeadline(d) {
+  return d.toLocaleDateString('de-DE',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ══════════════════════════════════════════════════
+// 5. SCORING
+// ══════════════════════════════════════════════════
+function norm(s){if(!s)return'';return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+
+function scoreEtappe(pid,nr){
+  var tipp=STATE.etTipps[pid]&&STATE.etTipps[pid][nr];
+  var erg=STATE.ergebnisse[nr];
+  if(!tipp||!erg||erg.status!=='done')return 0;
+  var pts=0;
+  var ergTop3=erg.top3||[];
+  (tipp.top3||[]).forEach(function(r,i){
+    if(!r)return;
+    if(ergTop3.some(function(x){return norm(x)===norm(r);})){
+      pts+=5;
+      if(norm(ergTop3[i])===norm(r))pts+=5;
+    }
+  });
+  var ergAus=(erg.ausreisser||[]).map(norm);
+  (tipp.ausreisser||[]).forEach(function(r){if(r&&ergAus.indexOf(norm(r))!==-1)pts+=1;});
+  if(tipp.kaempf&&norm(tipp.kaempf)===norm(erg.kaempf))pts+=3;
+  var isBonus=(STATE.bonusEtappen||[]).indexOf(nr)!==-1;
+  var isJoker=(STATE.joker[pid]||[]).indexOf(nr)!==-1;
+  if(isBonus&&isJoker)pts=Math.round(pts*3);
+  else if(isJoker)pts=pts*2;
+  else if(isBonus)pts=Math.round(pts*1.5);
+  return pts;
+}
+
+function scoreGC(pid){
+  var tipp=STATE.gcTipps[pid];
+  var erg=STATE.gcErgebnis;
+  if(!tipp||!erg||!erg.gc||!erg.gc.length)return 0;
+  var pts=0;
+  var EXACT=[25,20,15,10,8,6,5,4,3,2];
+  (tipp.gc||[]).forEach(function(r,i){
+    if(!r)return;
+    var idx=erg.gc.findIndex(function(x){return norm(x)===norm(r);});
+    if(idx!==-1){pts+=25;if(idx===i)pts+=EXACT[i]||0;}
+  });
+  if(tipp.berg&&norm(tipp.berg)===norm(erg.berg))pts+=30;
+  if(tipp.sprint&&norm(tipp.sprint)===norm(erg.sprint))pts+=30;
+  if(tipp.nachwuchs&&norm(tipp.nachwuchs)===norm(erg.nachwuchs))pts+=20;
+  if(tipp.team&&norm(tipp.team)===norm(erg.team))pts+=10;
+  return pts;
+}
+
+function totalScore(pid){return scoreGC(pid)+ETAPPEN.reduce(function(s,e){return s+scoreEtappe(pid,e.nr);},0);}
+
+function getLeaderboard(){
+  return PLAYERS.map(function(p){return Object.assign({},p,{
+    total:totalScore(p.id),
+    etTotal:ETAPPEN.reduce(function(s,e){return s+scoreEtappe(p.id,e.nr);},0),
+    gcTotal:scoreGC(p.id)
+  });}).sort(function(a,b){return b.total-a.total;});
+}
+
+function calcStreakBonus(pid){
+  var done=ETAPPEN.filter(function(e){return STATE.ergebnisse[e.nr]&&STATE.ergebnisse[e.nr].status==='done';});
+  var bonus=0,streak=0;
+  done.forEach(function(e){
+    var t=STATE.etTipps[pid]&&STATE.etTipps[pid][e.nr];
+    var g=STATE.ergebnisse[e.nr];
+    var ok=t&&t.top3&&t.top3[0]&&g&&g.top3&&g.top3[0]&&norm(t.top3[0])===norm(g.top3[0]);
+    if(ok){streak++;if(streak>=2)bonus+=15;}else streak=0;
+  });
+  return bonus;
+}
+
+function calcBonuses(){
+  var R={};
+  BONUS_CONFIGS.forEach(function(b){R[b.id]={winners:[],value:b.pts};});
+  var done=ETAPPEN.filter(function(e){return STATE.ergebnisse[e.nr]&&STATE.ergebnisse[e.nr].status==='done';});
+  function award(id,scores){
+    var max=Math.max.apply(null,PLAYERS.map(function(p){return scores[p.id]||0;}));
+    if(max<=0)return;
+    R[id].winners=PLAYERS.filter(function(p){return scores[p.id]===max;}).map(function(p){return p.id;});
+  }
+  var aus={};PLAYERS.forEach(function(p){var c=0;done.forEach(function(e){var t=STATE.etTipps[p.id]&&STATE.etTipps[p.id][e.nr];var g=STATE.ergebnisse[e.nr];if(!t||!g)return;(t.ausreisser||[]).forEach(function(r){if(r&&(g.ausreisser||[]).some(function(x){return norm(x)===norm(r);}))c++;});});aus[p.id]=c;});award('stage_hunter',aus);
+  if(STATE.gcErgebnis&&STATE.gcErgebnis.gc&&STATE.gcErgebnis.gc.length){var gce={};PLAYERS.forEach(function(p){var c=0;(STATE.gcTipps[p.id]&&STATE.gcTipps[p.id].gc||[]).forEach(function(r,i){if(r&&norm(STATE.gcErgebnis.gc[i])===norm(r))c++;});gce[p.id]=c;});award('gc_prophet',gce);}
+  var sh={};PLAYERS.forEach(function(p){var ok=0,tot=0;done.forEach(function(e){var t=STATE.etTipps[p.id]&&STATE.etTipps[p.id][e.nr];var g=STATE.ergebnisse[e.nr];if(!t||!g)return;(t.top3||[]).forEach(function(r,i){if(!r)return;tot++;if(norm(g.top3&&g.top3[i])===norm(r))ok++;});});sh[p.id]=tot>0?ok/tot:0;});award('sharpshooter',sh);
+  var gn={},mt={};PLAYERS.forEach(function(p){gn[p.id]=0;mt[p.id]=0;done.forEach(function(e){var t=STATE.etTipps[p.id]&&STATE.etTipps[p.id][e.nr];var g=STATE.ergebnisse[e.nr];if(!t||!g)return;var ok=t.top3&&t.top3[0]&&g.top3&&g.top3[0]&&norm(t.top3[0])===norm(g.top3[0]);if(ok){if(e.typ==='flat')gn[p.id]++;if(e.typ==='mountain')mt[p.id]++;}});});award('green_fan',gn);award('mountain_goat',mt);
+  var ud={};PLAYERS.forEach(function(p){var c=0;done.forEach(function(e){var t=STATE.etTipps[p.id]&&STATE.etTipps[p.id][e.nr];var g=STATE.ergebnisse[e.nr];if(!t||!t.top3||!t.top3[0]||!g||!g.top3||!g.top3[0])return;if(norm(t.top3[0])!==norm(g.top3[0]))return;var alone=PLAYERS.filter(function(op){return op.id!==p.id;}).every(function(op){var ot=STATE.etTipps[op.id]&&STATE.etTipps[op.id][e.nr];return!ot||!ot.top3||!ot.top3[0]||norm(ot.top3[0])!==norm(g.top3[0]);});if(alone)c++;});ud[p.id]=c;});award('underdog_hunter',ud);
+  var hs={};PLAYERS.forEach(function(p){var max=0,cur=0;done.forEach(function(e){var pts=scoreEtappe(p.id,e.nr);if(pts>=10){cur++;max=Math.max(max,cur);}else cur=0;});hs[p.id]=max;});award('hot_streak',hs);
+  var ck={};PLAYERS.forEach(function(p){var max=0;for(var i=0;i<done.length-1;i++){var prev=scoreEtappe(p.id,done[i].nr);var next=scoreEtappe(p.id,done[i+1].nr);if(prev===0)max=Math.max(max,next);}ck[p.id]=max;});award('comeback_king',ck);
+  return R;
+}
+
+// ══════════════════════════════════════════════════
+// 6. LOGIN
+// ══════════════════════════════════════════════════
+function showLogin(selectedId, error) {
+  var existing = document.getElementById('login-overlay');
+  if(existing) existing.remove();
+  var el = document.createElement('div');
+  el.id = 'login-overlay';
+  el.className = 'login-overlay';
+  if(!selectedId) {
+    el.innerHTML = '<div class="login-title">🚴 TdF <span>Tippspiel</span></div><div class="login-subtitle">2026 · Wer bist du?</div><div class="login-players">'
+      +PLAYERS.map(function(p){return '<button class="login-player-btn" onclick="showLogin(\''+p.id+'\')"><div class="login-avatar" style="background:'+p.color+'22;color:'+p.color+'">'+p.initials+'</div><div class="login-name">'+p.name+'</div></button>';}).join('')
+      +'</div>';
+  } else {
+    var p=PLAYERS.find(function(x){return x.id===selectedId;});
+    el.innerHTML = '<div class="login-title">🚴 TdF <span>Tippspiel</span></div>'
+      +'<div class="login-subtitle">PIN eingeben – '+p.name+'</div>'
+      +'<div class="pin-row">'
+      +'<input class="pin-digit" id="pin0" type="password" inputmode="numeric" maxlength="1" oninput="pinInput(this,0,\''+selectedId+'\')" autofocus>'
+      +'<input class="pin-digit" id="pin1" type="password" inputmode="numeric" maxlength="1" oninput="pinInput(this,1,\''+selectedId+'\')">'
+      +'<input class="pin-digit" id="pin2" type="password" inputmode="numeric" maxlength="1" oninput="pinInput(this,2,\''+selectedId+'\')">'
+      +'<input class="pin-digit" id="pin3" type="password" inputmode="numeric" maxlength="1" oninput="pinInput(this,3,\''+selectedId+'\')">'
+      +'</div>'
+      +'<div class="pin-error">'+(error||'')+'</div>'
+      +'<button class="login-back" onclick="showLogin()">← Zurück</button>';
+  }
+  document.body.appendChild(el);
+  if(selectedId) setTimeout(function(){var p0=document.getElementById('pin0');if(p0)p0.focus();},50);
+}
+
+function pinInput(el,idx,playerId) {
+  el.value=el.value.replace(/[^0-9]/g,'');
+  if(el.value.length===1&&idx<3){var next=document.getElementById('pin'+(idx+1));if(next)next.focus();}
+  if(idx===3&&el.value.length===1){
+    var entered=[0,1,2,3].map(function(i){var d=document.getElementById('pin'+i);return d?d.value:'';}).join('');
+    var player=PLAYERS.find(function(p){return p.id===playerId;});
+    if(entered===player.pin){
+      loggedInPlayer=playerId;
+      sessionStorage.setItem('tdf_logged_in',playerId);
+      var ov=document.getElementById('login-overlay');if(ov)ov.remove();
+      navigate('leaderboard');
+      showToast('👋 Willkommen, '+player.name+'!');
+    } else {
+      showLogin(playerId,'❌ Falscher PIN – bitte nochmal');
+    }
+  }
+}
+
+function logout(){
+  loggedInPlayer=null;adminUnlocked=false;
+  sessionStorage.removeItem('tdf_logged_in');
+  showLogin();
+}
+
+// ══════════════════════════════════════════════════
+// 7. NAVIGATION & RENDER
+// ══════════════════════════════════════════════════
+function navigate(page) {
+  if(!loggedInPlayer){showLogin();return;}
+  currentPage=page;
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.page===page);});
+  render();
+}
+
+function render() {
+  if(!loggedInPlayer){showLogin();return;}
+  var c=document.getElementById('content');
+  switch(currentPage){
+    case 'leaderboard': c.innerHTML=renderLeaderboard(); break;
+    case 'etappen':     c.innerHTML=renderEtappen();     break;
+    case 'tipps':       c.innerHTML=renderTipps();       break;
+    case 'stats':       c.innerHTML=renderStats();       break;
+    case 'regeln':      c.innerHTML=renderRegeln();      break;
+    case 'admin':       c.innerHTML=renderAdmin();       break;
+  }
+}
+
+// ══════════════════════════════════════════════════
+// 8. LEADERBOARD
+// ══════════════════════════════════════════════════
+function renderLeaderboard(){
+  var lb=getLeaderboard();
+  var maxPts=lb[0]&&lb[0].total||1;
+  var bonuses=calcBonuses();
+  var done=ETAPPEN.filter(function(e){return STATE.ergebnisse[e.nr]&&STATE.ergebnisse[e.nr].status==='done';}).length;
+  var rankMark=['🟡','2','3','4','5','6'];
+  var rows=lb.map(function(p,i){
+    var streakB=calcStreakBonus(p.id);
+    var bonusB=BONUS_CONFIGS.reduce(function(s,b){var r=bonuses[b.id];return r.winners.indexOf(p.id)!==-1?s+Math.round(b.pts/r.winners.length):s;},0)+streakB;
+    return '<div class="lb-row '+(i===0?'highlight':'')+'">'+
+      '<div class="lb-rank '+(i===0?'gold':i===1?'silver':i===2?'bronze':'')+'">'+(rankMark[i]||i+1)+'</div>'+
+      '<div class="lb-avatar" style="background:'+p.color+'22;color:'+p.color+'">'+p.initials+'</div>'+
+      '<div class="lb-info"><div class="lb-name">'+p.name+'</div>'+
+      '<div class="lb-detail">Etappen: '+p.etTotal+' · GC: '+p.gcTotal+' · Boni: +'+bonusB+'</div>'+
+      '<div class="progress-bar"><div class="progress-fill" style="width:'+Math.round(p.total/maxPts*100)+'%"></div></div></div>'+
+      '<div><div class="lb-pts">'+p.total+'</div><div class="lb-pts-label">Pkt</div></div></div>';
+  }).join('');
+  var bonusRows=BONUS_CONFIGS.map(function(b){
+    var r=bonuses[b.id];
+    var hw=r.winners.length>0;
+    var names=hw?r.winners.map(function(id){var p=PLAYERS.find(function(x){return x.id===id;});return p?p.name:'';}).join(' & '):'–';
+    return '<div class="bonus-row"><div class="bonus-emoji">'+b.emoji+'</div><div class="bonus-info"><div class="bonus-name">'+b.name+'</div><div class="bonus-desc">'+names+'</div></div><div class="bonus-pts">+'+Math.round(b.pts/(r.winners.length||1))+'</div></div>';
+  }).join('');
+  return '<div class="section-title">🏆 Leaderboard</div>'+
+    '<div class="card"><div class="flex between" style="margin-bottom:12px"><span class="card-title">Live-Ranking</span><span class="badge badge-grey">'+done+'/21 Etappen</span></div>'+rows+'</div>'+
+    '<div class="card"><div class="card-title">End-Boni (laufend)</div>'+bonusRows+
+    '<div class="bonus-row"><div class="bonus-emoji">🔥</div><div class="bonus-info"><div class="bonus-name">Tagessieger-Streak</div><div class="bonus-desc">+15 je 2er-Streak in Folge</div></div><div class="bonus-pts">pro Streak</div></div></div>';
+}
+
+// ══════════════════════════════════════════════════
+// 9. ETAPPEN
+// ══════════════════════════════════════════════════
+function renderEtappen(){
+  var rows=ETAPPEN.map(function(e){
+    var done=STATE.ergebnisse[e.nr]&&STATE.ergebnisse[e.nr].status==='done';
+    var isBonus=(STATE.bonusEtappen||[]).indexOf(e.nr)!==-1;
+    var date=new Date(e.datum).toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short'});
+    return '<div class="etappe-row" onclick="showEtappeDetail('+e.nr+')">'+
+      '<div class="etappe-num">'+e.nr+'</div>'+
+      '<div class="type-dot '+TYP_CLASS[e.typ]+'" style="margin-right:4px"></div>'+
+      '<div class="etappe-info"><div class="etappe-name">'+e.start+' › '+e.ziel+'</div>'+
+      '<div class="etappe-meta">'+date+' · '+e.km+' · '+TYP_LABEL[e.typ]+'</div></div>'+
+      '<div class="etappe-status">'+(done?'<span class="badge badge-green">✓</span>':'')+
+      (isBonus?'<span class="badge badge-yellow">×1.5</span>':'')+'</div></div>';
+  }).join('');
+  return '<div class="section-title">📅 Etappen 2026</div>'+
+    '<div class="pill-row" style="margin-bottom:12px"><span class="badge badge-green">✓ Abgeschlossen</span> <span class="badge badge-yellow">×1.5 Bonus</span></div>'+
+    '<div class="card">'+rows+'</div>';
+}
+
+function showEtappeDetail(nr){
+  var e=ETAPPEN.find(function(x){return x.nr===nr;});
+  var erg=STATE.ergebnisse[nr];
+  var done=erg&&erg.status==='done';
+  var isBonus=(STATE.bonusEtappen||[]).indexOf(nr)!==-1;
+  var date=new Date(e.datum).toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
+  var resultHtml='',scoresHtml='';
+  if(done){
+    resultHtml='<div class="card-title" style="margin-top:16px">Ergebnis</div>'+
+      (erg.top3||[]).map(function(r,i){return '<div style="padding:6px 0;border-bottom:1px solid var(--dark3);font-size:14px"><span class="text-yellow" style="margin-right:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800">'+(i+1)+'.</span>'+(r||'–')+'</div>';}).join('')+
+      '<div style="margin-top:10px"><div class="form-label">Ausreißer</div><div class="pill-row" style="margin-top:8px">'+((erg.ausreisser||[]).filter(Boolean).map(function(r){return '<span class="badge badge-grey">'+r+'</span>';}).join('')||'–')+'</div></div>'+
+      '<div style="margin-top:10px"><div class="form-label">Kämpferischster</div><div style="font-size:14px">'+(erg.kaempf||'–')+'</div></div>';
+    var scores=PLAYERS.map(function(p){return Object.assign({},p,{pts:scoreEtappe(p.id,nr),joker:(STATE.joker[p.id]||[]).indexOf(nr)!==-1});}).sort(function(a,b){return b.pts-a.pts;});
+    scoresHtml='<div class="card-title" style="margin-top:16px">Etappenpunkte</div>'+
+      scores.map(function(p){return '<div class="flex-center between" style="padding:8px 0;border-bottom:1px solid var(--dark3)"><div class="flex-center gap-8"><div class="lb-avatar" style="width:32px;height:32px;font-size:14px;background:'+p.color+'22;color:'+p.color+'">'+p.initials+'</div><span style="font-size:14px;font-weight:600">'+p.name+'</span>'+(p.joker?'<span class="badge badge-yellow">🃏</span>':'')+'</div><span style="font-family:\'Barlow Condensed\',sans-serif;font-size:20px;font-weight:800">'+p.pts+'</span></div>';}).join('');
+  }
+  showModal('<div class="modal-handle"></div>'+
+    '<div class="modal-title">Etappe '+nr+' '+(isBonus?'<span class="badge badge-yellow">×1.5 Bonus</span>':'')+'</div>'+
+    '<div class="text-grey" style="font-size:13px;margin-bottom:4px">'+date+'</div>'+
+    '<div style="font-size:15px;font-weight:600;margin-bottom:8px">'+e.start+' › '+e.ziel+'</div>'+
+    '<div class="flex-center gap-8" style="flex-wrap:wrap"><div class="type-dot '+TYP_CLASS[e.typ]+'"></div>'+
+    '<span class="text-grey" style="font-size:13px">'+TYP_LABEL[e.typ]+' · '+e.km+'</span>'+
+    '<a href="'+e.link+'" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--yellow);margin-left:auto">'+
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>letour.fr</a></div>'+
+    resultHtml+scoresHtml+
+    (!done?'<div class="empty-state"><div class="empty-icon">⏳</div><p>Noch kein Ergebnis eingetragen</p></div>':''));
+}
+
+// ══════════════════════════════════════════════════
+// 10. RIDER DROPDOWN
+// ══════════════════════════════════════════════════
+function riderPicker(id,value,placeholder){
+  placeholder=placeholder||'Fahrer auswählen...';
+  return '<div class="rider-search-wrap" id="wrap_'+id+'">'+
+    '<input id="rsi_'+id+'" class="rider-search-input" value="'+(value||'')+'" placeholder="'+placeholder+'" autocomplete="off" oninput="filterRiders(\''+id+'\')" onfocus="filterRiders(\''+id+'\')" onblur="setTimeout(function(){closeDropdown(\''+id+'\')},200)">'+
+    (value?'<button class="clear-btn" onmousedown="clearRider(\''+id+'\')">×</button>':'')+
+    '<div class="rider-dropdown" id="rdd_'+id+'" style="display:none"></div></div>';
+}
+
+function filterRiders(id){
+  var input=document.getElementById('rsi_'+id);
+  var dd=document.getElementById('rdd_'+id);
+  if(!input||!dd)return;
+  if(activeDropdown&&activeDropdown!==id)closeDropdown(activeDropdown);
+  activeDropdown=id;
+  var val=norm(input.value);
+  var list=val.length<1?RIDERS:RIDERS.filter(function(r){return norm(r).indexOf(val)!==-1;});
+  if(!list.length){dd.style.display='none';return;}
+  dd.innerHTML=list.map(function(r){return '<div class="rider-option" onmousedown="selectRider(\''+id+'\',\''+r.replace(/'/g,'&#39;')+'\')">'+r+'</div>';}).join('');
+  dd.style.display='';
+}
+
+function selectRider(id,name){
+  var input=document.getElementById('rsi_'+id);
+  if(input)input.value=name;
+  closeDropdown(id);
+  var wrap=document.getElementById('wrap_'+id);
+  if(wrap&&!wrap.querySelector('.clear-btn')){
+    var btn=document.createElement('button');
+    btn.className='clear-btn';btn.textContent='×';
+    btn.setAttribute('onmousedown','clearRider(\''+id+'\')');
+    wrap.appendChild(btn);
+  }
+}
+
+function clearRider(id){
+  var input=document.getElementById('rsi_'+id);
+  if(input)input.value='';
+  var wrap=document.getElementById('wrap_'+id);
+  var btn=wrap&&wrap.querySelector('.clear-btn');
+  if(btn)btn.remove();
+}
+
+function closeDropdown(id){
+  var dd=document.getElementById('rdd_'+id);
+  if(dd)dd.style.display='none';
+  if(activeDropdown===id)activeDropdown=null;
+}
+
+function getRiderVal(id){return(document.getElementById('rsi_'+id)||{}).value||'';}
+
+// ══════════════════════════════════════════════════
+// 11. TIPPS PAGE
+// ══════════════════════════════════════════════════
+function renderTipps(){
+  var player=PLAYERS.find(function(p){return p.id===loggedInPlayer;});
+  var jokersLeft=3-((STATE.joker[loggedInPlayer]||[]).length);
+  var etappenCards=ETAPPEN.map(function(e){return renderEtappeTippCard(e,player);}).join('');
+  var gcCard=renderGCTippCard(player);
+  return '<div class="section-title">✏️ Meine Tipps</div>'+
+    '<div class="flex-center gap-8" style="margin-bottom:16px">'+
+    '<div class="lb-avatar" style="width:36px;height:36px;font-size:15px;background:'+player.color+'22;color:'+player.color+'">'+player.initials+'</div>'+
+    '<span style="font-size:16px;font-weight:600">'+player.name+'</span>'+
+    '<button onclick="logout()" style="margin-left:auto;font-size:12px;color:var(--grey);display:flex;align-items:center;gap:4px">'+
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Abmelden</button></div>'+
+    '<div class="tabs"><div class="tab active" id="tab-etappe" onclick="switchTippTab(\'etappe\')">Etappen</div><div class="tab" id="tab-gc" onclick="switchTippTab(\'gc\')">GC & Wertungen</div></div>'+
+    '<div id="tipps-etappe-content">'+
+    '<div class="card" style="margin-bottom:12px"><div class="flex-center between"><span class="card-title">Joker verfügbar</span><span style="font-family:\'Barlow Condensed\',sans-serif;font-size:24px;font-weight:800;color:var(--yellow)">'+jokersLeft+'/3</span></div><div class="text-grey" style="font-size:12px">Joker = ×2 Punkte. Auf Bonus-Etappe = ×3!</div></div>'+
+    etappenCards+'</div>'+
+    '<div id="tipps-gc-content" style="display:none">'+gcCard+'</div>';
+}
+
+function renderEtappeTippCard(e,player){
+  var isOwn=player.id===loggedInPlayer;
+  var dlPast=isPastDeadline(e.nr);
+  var canSee=isOwn||dlPast;
+  var canEdit=isOwn&&!dlPast;
+  var tipp=canSee&&STATE.etTipps[player.id]&&STATE.etTipps[player.id][e.nr]||{};
+  var isBonus=(STATE.bonusEtappen||[]).indexOf(e.nr)!==-1;
+  var isJoker=(STATE.joker[player.id]||[]).indexOf(e.nr)!==-1;
+  var erg=STATE.ergebnisse[e.nr];
+  var done=erg&&erg.status==='done';
+  var pts=done?scoreEtappe(player.id,e.nr):null;
+  var date=new Date(e.datum).toLocaleDateString('de-DE',{day:'numeric',month:'short'});
+  var top3=canSee?(tipp.top3||[]).filter(Boolean):[];
+  var dlStr=fmtDeadline(getEtappeDeadline(e.nr));
+
+  var otherHtml='';
+  if(dlPast&&isOwn){
+    otherHtml=PLAYERS.filter(function(p){return p.id!==player.id;}).map(function(p){
+      var t=STATE.etTipps[p.id]&&STATE.etTipps[p.id][e.nr]||{};
+      var t3=(t.top3||[]).filter(Boolean);
+      var jok=(STATE.joker[p.id]||[]).indexOf(e.nr)!==-1;
+      var ppts=done?scoreEtappe(p.id,e.nr):null;
+      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--dark3)">'+
+        '<div class="lb-avatar" style="width:28px;height:28px;font-size:12px;flex-shrink:0;background:'+p.color+'22;color:'+p.color+'">'+p.initials+'</div>'+
+        '<div style="flex:1;font-size:12px;color:var(--grey)">'+(t3.length?t3.join(' · '):'–')+(jok?' 🃏':'')+'</div>'+
+        (ppts!==null?'<span class="badge badge-green" style="font-size:10px">'+ppts+' Pkt</span>':'')+
+        '</div>';
+    }).join('');
+  }
+
+  return '<div class="card" style="margin-bottom:8px">'+
+    '<div class="flex-center between">'+
+    '<div class="flex-center gap-8"><span style="font-family:\'Barlow Condensed\',sans-serif;font-size:16px;font-weight:800;color:var(--yellow)">E'+e.nr+'</span>'+
+    '<div><div style="font-size:13px;font-weight:600">'+e.ziel+'</div><div style="font-size:11px;color:var(--grey)">'+date+' · '+TYP_LABEL[e.typ]+'</div></div></div>'+
+    '<div class="flex-center gap-8">'+
+    (isBonus?'<span class="badge badge-yellow">×1.5</span>':'')+
+    (isJoker&&canSee?'<span class="badge badge-yellow">🃏</span>':'')+
+    (done&&pts!==null?'<span class="badge badge-green">'+pts+' Pkt</span>':'')+
+    (dlPast&&!done?'<span class="badge badge-grey">⏰ Zu</span>':'')+
+    '</div></div>'+
+    (canSee&&top3.length?'<div style="font-size:12px;color:var(--grey);margin-top:6px">'+top3.join(' · ')+'</div>':'')+
+    (!canSee?'<div style="font-size:12px;color:var(--grey);margin-top:6px">🔒 Sichtbar nach Deadline ('+dlStr+')</div>':'')+
+    (canEdit?'<button class="btn btn-secondary btn-full mt-8" onclick="openEtappeTippModal('+e.nr+',\''+player.id+'\')" style="font-size:13px;padding:8px">'+(top3.length?'✏️ Bearbeiten':'+ Tipp abgeben')+'</button>':'')+
+    (isOwn&&dlPast&&!done&&top3.length===0?'<div style="font-size:12px;color:var(--red);margin-top:6px">⚠️ Kein Tipp abgegeben</div>':'')+
+    otherHtml+'</div>';
+}
+
+function renderGCTippCard(player){
+  var isOwn=player.id===loggedInPlayer;
+  var dlPast=isGCPastDeadline();
+  var canSee=isOwn||dlPast;
+  var canEdit=isOwn&&!dlPast;
+  var tipp=canSee&&STATE.gcTipps[player.id]||{};
+  var gcDone=STATE.gcErgebnis&&STATE.gcErgebnis.gc&&STATE.gcErgebnis.gc.some(Boolean);
+  var pts=gcDone?scoreGC(player.id):null;
+  var dlStr=fmtDeadline(getGCDeadline());
+
+  var gcList='';
+  if(canSee){
+    gcList=Array.from({length:10},function(_,i){
+      return '<div style="padding:6px 0;border-bottom:1px solid var(--dark3);font-size:14px"><span class="text-yellow" style="margin-right:8px;font-family:\'Barlow Condensed\',sans-serif;font-size:16px;font-weight:800">'+(i+1)+'.</span>'+(tipp.gc&&tipp.gc[i]||'<span class="text-grey">–</span>')+'</div>';
+    }).join('');
+  } else {
+    gcList='<div style="font-size:13px;color:var(--grey);padding:16px 0;text-align:center">🔒 Sichtbar nach Deadline<br><span style="font-size:12px">'+dlStr+'</span></div>';
+  }
+
+  var sonder=[{k:'berg',l:'⛰️ Berg'},{k:'sprint',l:'💚 Sprint'},{k:'nachwuchs',l:'⚪ Nachwuchs'},{k:'team',l:'👥 Team'}];
+  var sonderHtml=canSee?'<div class="card-title" style="margin-top:16px">Sonderwertungen</div>'+
+    sonder.map(function(x){return '<div class="flex-center between" style="padding:8px 0;border-bottom:1px solid var(--dark3)"><span style="font-size:13px;color:var(--grey)">'+x.l+'</span><span style="font-size:13px;font-weight:600">'+(tipp[x.k]||'–')+'</span></div>';}).join(''):'';
+
+  var othersHtml='';
+  if(dlPast&&isOwn){
+    othersHtml='<div class="card" style="margin-top:12px"><div class="card-title">GC-Tipps der anderen</div>'+
+      PLAYERS.filter(function(p){return p.id!==player.id;}).map(function(p){
+        var t=STATE.gcTipps[p.id]||{};
+        return '<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--dark3)">'+
+          '<div class="flex-center gap-8" style="margin-bottom:6px"><div class="lb-avatar" style="width:28px;height:28px;font-size:12px;background:'+p.color+'22;color:'+p.color+'">'+p.initials+'</div><span style="font-size:13px;font-weight:600">'+p.name+'</span></div>'+
+          '<div style="font-size:12px;color:var(--grey)">'+((t.gc||[]).filter(Boolean).map(function(r,i){return (i+1)+'. '+r;}).join(' · ')||'–')+'</div>'+
+          '<div style="font-size:11px;color:var(--grey);margin-top:4px">Berg: '+(t.berg||'–')+' · Sprint: '+(t.sprint||'–')+' · NW: '+(t.nachwuchs||'–')+' · Team: '+(t.team||'–')+'</div></div>';
+      }).join('')+'</div>';
+  }
+
+  return '<div class="card">'+
+    '<div class="flex-center between" style="margin-bottom:12px"><span class="card-title">GC Top-10</span>'+
+    (gcDone&&pts!==null?'<span class="badge badge-green">'+pts+' Pkt</span>':'')+
+    (!dlPast?'<span class="badge badge-grey" style="font-size:10px">⏰ bis '+dlStr+'</span>':'')+
+    '</div>'+gcList+sonderHtml+
+    (canEdit?'<button class="btn btn-primary btn-full mt-12" onclick="openGCTippModal(\''+player.id+'\')">'+(tipp.gc&&tipp.gc.some(Boolean)?'✏️ Bearbeiten':'+ GC-Tipps abgeben')+'</button>':'')+
+    (isOwn&&dlPast&&!(tipp.gc&&tipp.gc.some(Boolean))?'<div style="font-size:12px;color:var(--red);margin-top:8px">⚠️ Keine GC-Tipps abgegeben</div>':'')+
+    '</div>'+othersHtml;
+}
+
+function switchTippTab(tab){
+  document.getElementById('tipps-etappe-content').style.display=tab==='etappe'?'':'none';
+  document.getElementById('tipps-gc-content').style.display=tab==='gc'?'':'none';
+  document.getElementById('tab-etappe').classList.toggle('active',tab==='etappe');
+  document.getElementById('tab-gc').classList.toggle('active',tab==='gc');
+}
+
+// ══════════════════════════════════════════════════
+// 12. TIPP MODALS
+// ══════════════════════════════════════════════════
+
+function teamPicker(id, value, placeholder) {
+  placeholder = placeholder || 'Team auswählen...';
+  var opts = '<option value="">'+placeholder+'</option>' +
+    TTT_TEAMS.map(function(t) {
+      return '<option value="'+t+'"'+(value===t?' selected':'')+'>'+t+'</option>';
+    }).join('');
+  return '<select id="'+id+'" class="form-select" style="background-color:var(--dark3);color:var(--white)">'+opts+'</select>';
+}
+
+function openEtappeTippModal(nr,pid){
+  if(isPastDeadline(nr)){showToast("Deadline abgelaufen!");return;}
+  var e=ETAPPEN.find(function(x){return x.nr===nr;});
+  var isTTT=(nr===1);
+  var tipp=STATE.etTipps[pid]&&STATE.etTipps[pid][nr]||{};
+  var isBonus=(STATE.bonusEtappen||[]).indexOf(nr)!==-1;
+  var isJoker=(STATE.joker[pid]||[]).indexOf(nr)!==-1;
+  var jokersUsed=(STATE.joker[pid]||[]).length;
+  var canJoker=jokersUsed<3||isJoker;
+  var p1val=tipp.top3&&tipp.top3[0]||"";
+  var p2val=tipp.top3&&tipp.top3[1]||"";
+  var p3val=tipp.top3&&tipp.top3[2]||"";
+  var a1val=tipp.ausreisser&&tipp.ausreisser[0]||"";
+  var a2val=tipp.ausreisser&&tipp.ausreisser[1]||"";
+  var a3val=tipp.ausreisser&&tipp.ausreisser[2]||"";
+  var kfval=tipp.kaempf||"";
+  var formFields="";
+  if(isTTT){
+    formFields+='<div style="font-size:12px;color:var(--grey);margin-bottom:12px">Mannschaftszeitfahren - bitte Teams tippen</div>';
+    formFields+='<div class="form-group"><label class="form-label">1. Team</label>'+teamPicker("p1",p1val)+'</div>';
+    formFields+='<div class="form-group"><label class="form-label">2. Team</label>'+teamPicker("p2",p2val)+'</div>';
+    formFields+='<div class="form-group"><label class="form-label">3. Team</label>'+teamPicker("p3",p3val)+'</div>';
+  } else {
+    formFields+='<div class="form-group"><label class="form-label">1. Platz</label>'+riderPicker("p1",p1val)+'</div>';
+    formFields+='<div class="form-group"><label class="form-label">2. Platz</label>'+riderPicker("p2",p2val)+'</div>';
+    formFields+='<div class="form-group"><label class="form-label">3. Platz</label>'+riderPicker("p3",p3val)+'</div>';
+    formFields+='<div class="form-group"><label class="form-label">Ausreisser 1</label>'+riderPicker("a1",a1val,"Optional...")+'</div>';
+    formFields+='<div class="form-group"><label class="form-label">Ausreisser 2</label>'+riderPicker("a2",a2val,"Optional...")+'</div>';
+    formFields+='<div class="form-group"><label class="form-label">Ausreisser 3</label>'+riderPicker("a3",a3val,"Optional...")+'</div>';
+    formFields+='<div class="form-group"><label class="form-label">Kaempferischster Fahrer</label>'+riderPicker("kf",kfval)+'</div>';
+  }
+  var html="";
+  html+='<div class="modal-handle"></div>';
+  html+='<div class="modal-title">E'+nr+(isBonus?' x1.5':'')+(isTTT?' TTT':'')+'</div>';
+  html+='<div style="font-size:13px;color:var(--grey);margin-bottom:16px">'+e.start+' - '+e.ziel+'</div>';
+  html+=formFields;
+  var jokerLabel=isJoker?"Joker aktiv - zum Entfernen tippen":"Joker einsetzen (x"+(isBonus?"3":"2")+")";
+  html+='<div class="form-group"><label class="form-label">Joker ('+( 3-jokersUsed)+' verfuegbar)</label>';
+  html+='<button class="joker-btn '+( isJoker?"active":"")+'" onclick="toggleJoker(\"'+pid+'\",'+nr+')" '+( canJoker||isJoker?"":"disabled")+'>'+jokerLabel+'</button></div>';
+  html+='<button class="btn btn-primary btn-full mt-12" onclick="saveEtappeTipp('+nr+',\"'+pid+'\")">Tipp speichern</button>';
+  showModal(html);
+}
+
+
+function toggleJoker(pid,nr){
+  if(!STATE.joker[pid])STATE.joker[pid]=[];
+  var idx=STATE.joker[pid].indexOf(nr);
+  if(idx!==-1)STATE.joker[pid].splice(idx,1);
+  else{if(STATE.joker[pid].length>=3){showToast('Keine Joker mehr!');return;}STATE.joker[pid].push(nr);}
+  openEtappeTippModal(nr,pid);
+}
+
+async function saveEtappeTipp(nr,pid){
+  if(isPastDeadline(nr)){showToast('Deadline abgelaufen!');return;}
+  var e=ETAPPEN.find(function(x){return x.nr===nr;});
+  var isTTT=(nr===1);
+  if(!STATE.etTipps[pid])STATE.etTipps[pid]={};
+  if(isTTT){
+    STATE.etTipps[pid][nr]={
+      top3:[document.getElementById('p1')&&document.getElementById('p1').value||'',
+            document.getElementById('p2')&&document.getElementById('p2').value||'',
+            document.getElementById('p3')&&document.getElementById('p3').value||''],
+      ausreisser:[],kaempf:'',isTTT:true
+    };
+  } else {
+    STATE.etTipps[pid][nr]={top3:[getRiderVal('p1'),getRiderVal('p2'),getRiderVal('p3')],ausreisser:[getRiderVal('a1'),getRiderVal('a2'),getRiderVal('a3')],kaempf:getRiderVal('kf')};
+  }
+  await pushState();closeModalForce();render();showToast('Tipp gespeichert!');
+}
+
+function openGCTippModal(pid){
+  if(isGCPastDeadline()){showToast('GC-Deadline abgelaufen!');return;}
+  var tipp=STATE.gcTipps[pid]||{};
+  var rows=Array.from({length:10},function(_,i){return '<div class="form-group"><label class="form-label">'+(i+1)+'. Platz</label>'+riderPicker('gc'+i,tipp.gc&&tipp.gc[i]||'')+'</div>';}).join('');
+  showModal('<div class="modal-handle"></div><div class="modal-title">GC & Wertungen</div>'+
+    '<div class="card-title">Gesamtwertung Top-10</div>'+rows+
+    '<div class="card-title" style="margin-top:4px">Sonderwertungen</div>'+
+    '<div class="form-group"><label class="form-label">Berg</label>'+riderPicker('gcberg',tipp.berg||'')+'</div>'+
+    '<div class="form-group"><label class="form-label">Sprint</label>'+riderPicker('gcsprint',tipp.sprint||'')+'</div>'+
+    '<div class="form-group"><label class="form-label">Nachwuchs</label>'+riderPicker('gcnw',tipp.nachwuchs||'')+'</div>'+
+    '<div class="form-group"><label class="form-label">Team</label><input id="gcteam" class="form-input" value="'+(tipp.team||'')+'" placeholder="Team eingeben..."></div>'+
+    '<button class="btn btn-primary btn-full mt-12" onclick="saveGCTipp(\''+pid+'\')">GC-Tipps speichern</button>');
+}
+
+async function saveGCTipp(pid){
+  if(isGCPastDeadline()){showToast('GC-Deadline abgelaufen!');return;}
+  STATE.gcTipps[pid]={gc:Array.from({length:10},function(_,i){return getRiderVal('gc'+i);}),berg:getRiderVal('gcberg'),sprint:getRiderVal('gcsprint'),nachwuchs:getRiderVal('gcnw'),team:(document.getElementById('gcteam')||{}).value||''};
+  await pushState();closeModalForce();render();showToast('GC-Tipps gespeichert!');
+}
+
+function openAdminEtappeModal(nr){
+  var e=ETAPPEN.find(function(x){return x.nr===nr;});
+  var isTTT=(nr===1);
+  var erg=STATE.ergebnisse[nr]||{};
+  var top3Fields;
+  if(isTTT){
+    top3Fields='<div style="font-size:12px;color:var(--grey);margin-bottom:8px">Mannschaftszeitfahren - Teams eintragen</div>'+
+      '<div class="form-group"><label class="form-label">1. Team</label>'+teamPicker('ep1',erg.top3&&erg.top3[0]||'')+'</div>'+
+      '<div class="form-group"><label class="form-label">2. Team</label>'+teamPicker('ep2',erg.top3&&erg.top3[1]||'')+'</div>'+
+      '<div class="form-group"><label class="form-label">3. Team</label>'+teamPicker('ep3',erg.top3&&erg.top3[2]||'')+'</div>';
+  } else {
+    top3Fields=
+      '<div class="form-group"><label class="form-label">1. Platz</label>'+riderPicker('ep1',erg.top3&&erg.top3[0]||'')+'</div>'+
+      '<div class="form-group"><label class="form-label">2. Platz</label>'+riderPicker('ep2',erg.top3&&erg.top3[1]||'')+'</div>'+
+      '<div class="form-group"><label class="form-label">3. Platz</label>'+riderPicker('ep3',erg.top3&&erg.top3[2]||'')+'</div>'+
+      '<div class="card-title" style="margin-top:4px">Ausreissergruppe</div>'+
+      '<div style="font-size:12px;color:var(--grey);margin-bottom:8px">Alle Fahrer, einer pro Zeile</div>'+
+      '<div class="form-group"><textarea id="erg-aus" class="form-input" rows="6">'+(erg.ausreisser||[]).join('\n')+'</textarea></div>'+
+      '<div class="form-group"><label class="form-label">Kaempferischster Fahrer</label>'+riderPicker('ekf',erg.kaempf||'')+'</div>';
+  }
+  showModal('<div class="modal-handle"></div><div class="modal-title">Admin: Etappe '+nr+(isTTT?' TTT':'')+'</div>'+
+    '<div style="font-size:13px;color:var(--grey);margin-bottom:16px">'+e.start+' - '+e.ziel+'</div>'+
+    '<div class="card-title">Top 3</div>'+top3Fields+
+    '<div class="flex-center gap-8 mt-12">'+
+    '<button class="btn btn-primary" style="flex:1" onclick="saveAdminEtappe('+nr+')">Speichern</button>'+
+    (erg.status==='done'?'<button class="btn btn-danger" style="flex:1" onclick="resetAdminEtappe('+nr+')">Zuruecksetzen</button>':'')+
+    '</div>');
+}
+
+async function saveAdminEtappe(nr){
+  var e=ETAPPEN.find(function(x){return x.nr===nr;});
+  var isTTT=(nr===1);
+  var top3;
+  if(isTTT){
+    top3=[document.getElementById('ep1')&&document.getElementById('ep1').value||'',
+          document.getElementById('ep2')&&document.getElementById('ep2').value||'',
+          document.getElementById('ep3')&&document.getElementById('ep3').value||''];
+  } else {
+    top3=[getRiderVal('ep1'),getRiderVal('ep2'),getRiderVal('ep3')];
+  }
+  if(!top3[0]){showToast('Platz 1 fehlt!');return;}
+  var aus=isTTT?[]:(document.getElementById('erg-aus')&&document.getElementById('erg-aus').value||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
+  var kaempf=isTTT?'':getRiderVal('ekf');
+  STATE.ergebnisse[nr]={top3:top3,ausreisser:aus,kaempf:kaempf,status:'done',isTTT:isTTT};
+  await pushState();closeModalForce();render();showToast('Etappe '+nr+' gespeichert!');
+}
+
+async function resetAdminEtappe(nr){
+  delete STATE.ergebnisse[nr];
+  await pushState();closeModalForce();render();showToast('Etappe '+nr+' zurueckgesetzt');
+}
+
+function openAdminGCModal(){
+  var erg=STATE.gcErgebnis||{};
+  var rows=Array.from({length:10},function(_,i){return '<div class="form-group"><label class="form-label">'+(i+1)+'. Platz</label>'+riderPicker('agc'+i,erg.gc&&erg.gc[i]||'')+'</div>';}).join('');
+  showModal('<div class="modal-handle"></div><div class="modal-title">Admin: GC Ergebnis</div>'+
+    '<div class="card-title">Top-10 Gesamtwertung</div>'+rows+
+    '<div class="card-title" style="margin-top:4px">Sonderwertungen</div>'+
+    '<div class="form-group"><label class="form-label">Berg</label>'+riderPicker('agcb',erg.berg||'')+'</div>'+
+    '<div class="form-group"><label class="form-label">Sprint</label>'+riderPicker('agcs',erg.sprint||'')+'</div>'+
+    '<div class="form-group"><label class="form-label">Nachwuchs</label>'+riderPicker('agcn',erg.nachwuchs||'')+'</div>'+
+    '<div class="form-group"><label class="form-label">Team</label><input id="agct" class="form-input" value="'+(erg.team||'')+'" placeholder="Team..."></div>'+
+    '<button class="btn btn-primary btn-full mt-12" onclick="saveAdminGC()">GC-Ergebnis speichern</button>');
+}
+
+async function saveAdminGC(){
+  STATE.gcErgebnis={gc:Array.from({length:10},function(_,i){return getRiderVal('agc'+i);}),berg:getRiderVal('agcb'),sprint:getRiderVal('agcs'),nachwuchs:getRiderVal('agcn'),team:(document.getElementById('agct')||{}).value||''};
+  await pushState();closeModalForce();render();showToast('GC-Ergebnis gespeichert!');
+}
+
+function showModal(html){document.getElementById('modal-container').innerHTML='<div class="modal-overlay" onclick="closeModal(event)"><div class="modal">'+html+'</div></div>';}
+function closeModal(e){if(e.target.classList.contains('modal-overlay'))document.getElementById('modal-container').innerHTML='';}
+function closeModalForce(){document.getElementById('modal-container').innerHTML='';}
+
+function exportData(){
+  var a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([JSON.stringify(STATE,null,2)],{type:'application/json'})),download:'tdf2026_'+new Date().toISOString().slice(0,10)+'.json'});
+  a.click();showToast('Exportiert!');
+}
+function importData(e){
+  var f=e.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(ev){try{STATE=Object.assign({},DEFAULT_STATE,JSON.parse(ev.target.result));saveLocal();render();showToast('Importiert!');}catch(err){showToast('Import fehlgeschlagen');}};
+  r.readAsText(f);
+}
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2800);
+}
+
+(async function init(){
+  var saved=sessionStorage.getItem('tdf_logged_in');
+  if(saved&&PLAYERS.find(function(p){return p.id===saved;})){
+    loggedInPlayer=saved;
+  }
+  if(getApiBase()){
+    setSyncStatus('syncing','Verbinde...');
+    await pullState();
+  } else {
+    setSyncStatus('offline','Offline');
+  }
+  if(loggedInPlayer){
+    navigate('leaderboard');
+  } else {
+    showLogin();
+  }
+})();
+</script>
+</body>
+</html>
